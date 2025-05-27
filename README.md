@@ -5,8 +5,8 @@ Requirements: git, Python >= 3.12
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository-url>
-    cd <repository-directory>
+    git clone https://github.com/momoiro-kakarichou/WorkshopAI.git
+    cd WorkshopAI
     ```
 
 2.  **Run the installation script:**
