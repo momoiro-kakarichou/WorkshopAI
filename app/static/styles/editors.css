@@ -1,0 +1,40 @@
+.message-editor-container {
+    height: 400px !important;
+    width: 100%;
+    overflow-y: auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#quill-editor-dialog {
+    padding: 10px;
+}
+
+.CodeMirror {
+    flex-grow: 1;
+    font-family: monospace;
+    font-size: 14px;
+    text-align: start;
+}
+
+.CodeMirror-gutters {
+    padding-right: 10px;
+}
+
+.CodeMirror-linenumber {
+    padding-right: 5px !important;
+}
+
+#code-editor {
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+}
+
+.code-editor-buttons {
+    text-align: right;
+}
+
+.code-editor-buttons button {
+    margin-left: 10px;
+}

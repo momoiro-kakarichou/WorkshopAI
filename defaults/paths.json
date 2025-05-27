@@ -1,0 +1,10 @@
+[
+    {
+        "source": "./defaults/config.py",
+        "destination": "./config.py"
+    },
+    {
+        "source": "./defaults/.env",
+        "destination": "./.env"
+    }
+]

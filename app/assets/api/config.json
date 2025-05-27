@@ -1,0 +1,6 @@
+{
+    "chat_completions": ["claude", "gpt"],
+    
+    "chat_completions_claude": ["sonnet", "opus"],
+    "chat_completions_gpt": ["gpt-4o"]
+}

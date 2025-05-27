@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WorkshopAI</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    {% assets "css_external" %}
+        <link rel="stylesheet" href="{{ ASSET_URL }}">
+    {% endassets %}
+    {% assets "css_internal" %}
+        <link rel="stylesheet" href="{{ ASSET_URL }}">
+    {% endassets %}
+    {% assets "js_external" %}
+        <script defer type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+    <script type="text/javascript">
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="{{ url_for('static', filename='scripts/external/tex-mml-chtml.js') }}"></script>
+</head>
+<body>
+    <div id="loading-screen" class="loading-screen">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <div id="main-container" class="hidden">
+        <header>
+            <div id="bar-container">
+                <div id="main-image-container" class="main-image-container">
+                    <a>
+                        <img src="{{ url_for('static', filename='resources/test.png') }}">
+                    </a>
+                </div>
+                <div id="main-chat-interaction-container" class="ms-auto d-flex">
+                    <h3 id="current-chat-name">No Chat</h3>
+                    <div id="main-buttons-container" class="btn-group ms-auto" role="group">
+                        <div id="main-button-chat-edit" class="interactable-icon"><i class="fa-solid fa-pencil"></i></div>
+                        <div id="main-button-chat-tree" class="interactable-icon"><i class="fa-solid fa-code-branch"></i></div>
+                        <div id="main-button-chat-manage" class="interactable-icon"><i class="fa-solid fa-folder-tree"></i></div>
+                        <div id="main-button-chat-new" class="interactable-icon"><i class="fa-solid fa-square-plus"></i></div>
+                        <div id="main-button-chat-export" class="interactable-icon"><i class="fa-solid fa-file-export"></i></div>
+                        <div id="main-button-chat-delete" class="interactable-icon"><i class="fa-solid fa-trash-can"></i></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div id="down-container">
+            <nav>
+                <div id="messager-button" class="interactable-icon" title="Messager"><i class="fa-solid fa-comments"></i></div>
+                <div id="cards-button" class="interactable-icon" title="Cards Gallery"><i class="fa-solid fa-address-book"></i></div>
+                <div id="persona-button" class="interactable-icon" title="Persona"><i class="fa-solid fa-user"></i></div>
+                <div id="preset-button" class="interactable-icon" title="Workflows"><i class="fa-solid fa-diagram-project"></i></div>
+                <div id="agents-button" class="interactable-icon" title="Agents"><i class="fa-solid fa-robot"></i></div>
+                <div id="api-button" class="interactable-icon" title="API"><i class="fa-solid fa-plug"></i></div>
+                <div id="extra-button" class="interactable-icon" title="Extra"><i class="fa-solid fa-database"></i></div>
+                <div id="settings-button" class="interactable-icon" title="Settings"><i class="fa-solid fa-gear"></i></div>
+                <div id="docs-button" class="interactable-icon" title="Docs"><i class="fa-solid fa-book"></i></div>
+            </nav>
+            <main>
+                <section id="messager-background"></section>
+                <section id="messager-container">
+                    <div id="chat-meta-container">
+                        <div id="chat-container"></div>
+                        <div id="chat-right-container">
+                            <div id="quick-button" class="interactable-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div id="chat-right-add-button-container" class="btn-group" role="group" aria-label="Basic example">
+                                <div id="chat-right-add-button" class="interactable-icon"><i class="fa-solid fa-plus"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="user-input-container">
+                        <div id="options-button" class="interactable-icon"><i class="fa-solid fa-bars"></i></div>
+                        <textarea id="user-input" class="user-input" placeholder="Type a message..."></textarea>
+                        <div id="voice-button" class="interactable-icon"><i class="fa-solid fa-microphone"></i></div>
+                        <div id="send-button" class="interactable-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                    </div>
+                </section>
+                <section id="preset-menu-container" class="hidden">
+                    <div class="menu">
+                        <select id="workflow-selector" class="form-control"></select>
+                        <button id="save-workflow-button" class="btn btn-secondary">Save</button>
+                        <button id="add-workflow-button" class="btn btn-secondary">Add</button>
+                        <button id="delete-workflow-button" class="btn btn-secondary">Delete</button>
+                    </div>
+                    <div class="board">
+                        <div class="paper-container"></div>
+                    </div>
+                    <div id="board-context-menu" class="dropdown-menu" style="display: none; position: absolute;">
+                        <ul class="list-unstyled">
+                            <li id="board-create-link" class="dropdown-item">Create Link</li>
+                            <li id="board-delete-link" class="dropdown-item">Delete Link</li>
+                            <li id="board-delete-node" class="dropdown-item">Delete Node</li>
+                            <li id="board-add-node" class="dropdown-item">Add Node</li>
+                            <li id="board-add-window" class="dropdown-item">Add Window</li>
+                            <li id="board-add-note" class="dropdown-item">Add Note</li>
+                            <li id="board-rename-window" class="dropdown-item">Rename Window</li>
+                            <li id="board-delete-window" class="dropdown-item">Delete Window</li>
+                            <li id="board-delete-note" class="dropdown-item">Delete Note</li>
+                            <li id="board-clear-nodes" class="dropdown-item">Clear Nodes</li>
+                        </ul>
+                    </div>
+                </section>
+                <section id="api-menu-container" class="hidden">
+                    <div id="api-type-list">
+                        <button id="api-chat-completions" class="btn btn-success button" type="button">Chat Сompletions</button>
+                    </div>
+                    <div id="api-config">
+                    </div>
+                    <div id="api-chat-completion-config" class="hidden">
+                        <div class="flex-column">
+                            <label for="cc_source" class="col-form-label">API Source:</label>
+                            <select id="cc_source" class="form-control"></select>
+                        </div>
+                        <div class="flex-column">
+                            <label for="cc_preset" class="col-form-label">API Preset:</label>
+                            <select id="cc_preset" class="form-control"></select>
+                        </div>
+                        <div class="flex-column">
+                            <label for="cc_name" class="col-form-label">Preset Name:</label>
+                            <input type="text" id="cc_name" class="form-control">
+                        </div>
+                        <div class="flex-column">
+                            <label for="cc_url" class="col-form-label">Base URL:</label>
+                            <input type="text" id="cc_url" class="form-control">
+                        </div>
+                        <div class="flex-column">
+                            <label for="cc_password" class="col-form-label">API Key/Password:</label>
+                            <input type="password" id="cc_password" class="form-control" autocomplete="new-password">
+                        </div>
+                        <div class="flex-column">
+                            <label for="cc_model" class="col-form-label">Model:</label>
+                            <div class="model-input-group">
+                                <select id="cc_model" class="form-control"></select>
+                                <button id="cc-refresh-models-button" type="button" class="btn btn-sm btn-info ms-2" title="Refresh models from endpoint"><i class="fa-solid fa-arrows-rotate"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex-column">
+                            <label for="cc_tags" class="col-form-label">Tags (comma-separated):</label>
+                            <input type="text" id="cc_tags" class="form-control">
+                        </div>
+                        <button id="cc-save-preset-button" type="submit" class="btn btn-primary">Save</button>
+                        <button id="cc-new-preset-button" type="button" class="btn btn-success">New</button>
+                        <button id="cc-delete-preset-button" type="button" class="btn btn-danger">Delete</button>
+                    </div>
+                </section>
+                <section id="settings-menu-container" class="hidden"></section>
+                <section id="extra-menu-container" class="hidden"></section>
+                <section id="persona-menu-container" class="hidden"></section>
+                <section id="cards-menu-container" class="hidden">
+                    <div id="cards-panel-container" class="d-flex">
+                        <input id="cards-panel-search" placeholder="Search..."></input>
+                        <div id="cards-panel-buttons-container" class="btn-group ms-auto" role="group">
+                            <div id="cards-panel-button-new" class="interactable-icon"><i class="fa-solid fa-square-plus"></i></div>
+                        </div>
+                    </div>
+                    <div id="cards-grid-container">
+                    </div>
+                </section>
+                <section id="agents-menu-container" class="hidden">
+                    <div class="agents-panel">
+                        <select id="agents-selector" class="form-control"></select>
+                        <button id="agents-add-button" class="btn btn-secondary">Add</button>
+                        <button id="agents-new-button" class="btn btn-secondary">New</button>
+                        <button id="agents-import-button" class="btn btn-secondary">Import</button>
+                        <button id="agents-export-button" class="btn btn-secondary">Export</button>
+                        <button id="agents-delete-button" class="btn btn-secondary">Delete</button>
+                    </div>
+                    <div class="agents-info">
+                        <div id="agents-list">
+                            <ul id="agents-list-sortable">
+                            </ul>
+                        </div>
+                        <div id="agents-management">
+                            <div class="flex-row gap-2">
+                                <div class="flex-column flex-grow-1">
+                                    <label for="agent-name" class="col-form-label">Agent Name:</label>
+                                    <input type="text" id="agent-name" class="form-control">
+                                </div>
+                                <div class="flex-column flex-grow-1">
+                                    <label for="agent-version" class="col-form-label">Version:</label>
+                                    <select id="agent-version" class="form-control"></select>
+                                </div>
+                                <div class="flex-column flex-grow-1">
+                                    <label for="agent-workflow" class="col-form-label">Workflow:</label>
+                                    <select id="agent-workflow" class="form-control"></select>
+                                </div>
+                            </div>
+                            <div class="flex-column">
+                                <label for="agent-description" class="col-form-label">Description:</label>
+                                <textarea id="agent-description" class="form-control" rows="5"></textarea>
+                            </div>
+                            
+                            <div class="flex-column">
+                                <label for="agent-save-version" class="col-form-label">Save version:</label>
+                                <div class="agent-save-panel">
+                                    <input type="text" id="agent-save-version" class="form-control">
+                                    <button id="agents-save-button" class="btn btn-secondary">Save</button>
+                                </div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="form-column d-flex align-items-center">
+                                <label for="agent-variables" class="col-form-label mb-0 me-auto">Variables:</label>
+                                <div class="btn-group ms-auto" role="group" aria-label="Basic example">
+                                    <button id="agents-variables-new-button" class="btn btn-secondary">New</button>
+                                    <button id="agents-variables-import-button" class="btn btn-secondary">Import</button>
+                                    <button id="agents-variables-export-button" class="btn btn-secondary">Export</button>
+                                </div>
+                            </div>
+                            <div id="agent-variables">
+                                <ul id="agent-variables-sortable">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+        <div class="modal fade" id="name-dialog" tabindex="-1" role="dialog" aria-labelledby="nameDialogLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="nameDialogLabel">Enter Name</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" id="name" name="name" class="form-control">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="name-dialog-ok">OK</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="name-dialog-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="code-editor-dialog" title="Edit Node Content" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Node Content</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="code-editor"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="code-save" class="btn btn-primary">Save</button>
+                        <button id="code-cancel" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="{{ url_for('static', filename='main.js') }}"> </script>
+</body>
+</html>
