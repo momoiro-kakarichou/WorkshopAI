@@ -5,7 +5,8 @@ app/static/gen/*
 !app/static/gen/bootstrap.min.js.map
 /config.py
 .vscode/
-/*.env
+.env
+!defaults/.env
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -128,7 +129,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv*
 env/
 venv/
